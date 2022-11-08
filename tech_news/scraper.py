@@ -1,23 +1,28 @@
 # Requisito 1
 import requests
 from time import sleep
-# from parsel import Selector
+from parsel import Selector
 
 
-def fetch(url, wait: int = 1):
+def fetch(url, wait: int = 3):
     try:
-        response = requests.get(url, timeout=wait)
+        headers = {"user-agent": "Fake user-agent"}
+        response = requests.get(url, timeout=wait, headers=headers)
         sleep(1)
         response.raise_for_status()
     except (requests.HTTPError, requests.ReadTimeout):
         return None
-    else:
-        return response.text
+    return response.text
 
 
 # Requisito 2
 def scrape_novidades(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(html_content)
+    urls = []
+    for article in selector.css(".cs-overlay-link"):
+        link = article.css("a::attr(href)").get()
+        urls.append(link)
+    return urls
 
 
 # Requisito 3
