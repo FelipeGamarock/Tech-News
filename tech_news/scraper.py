@@ -36,7 +36,24 @@ def scrape_next_page_link(html_content):
 
 # Requisito 4
 def scrape_noticia(html_content):
-    """Seu código deve vir aqui"""
+    selector = Selector(html_content)
+    new_data = {}
+    title = selector.css(".entry-title::text").get()
+    new_data["title"] = title
+
+    timestamp = selector.css("li.meta-date::text").get()
+    new_data["timestamp"] = timestamp
+
+    writer = selector.css("a.url.fn.n::text").get()
+    new_data["writer"] = writer
+
+    summary = selector.css(".entry-content p::text")
+    new_data["summary"] = summary
+
+    category = selector.css(".label::text")
+    new_data["category"] = category
+
+    return new_data
 
 
 # Requisito 5
