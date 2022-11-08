@@ -1,7 +1,18 @@
 # Requisito 1
-# Inicio de projeto
-def fetch(url):
-    """Seu código deve vir aqui"""
+import requests
+from time import sleep
+# from parsel import Selector
+
+
+def fetch(url, wait: int = 1):
+    try:
+        response = requests.get(url, timeout=wait)
+        sleep(1)
+        response.raise_for_status()
+    except (requests.HTTPError, requests.ReadTimeout):
+        return None
+    else:
+        return response.text
 
 
 # Requisito 2
