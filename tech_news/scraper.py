@@ -1,9 +1,10 @@
-# Requisito 1
 import requests
 from time import sleep
 from parsel import Selector
+# from tech_news.database import create_news, insert_or_update, find_news
 
 
+# Requisito 1
 def fetch(url, wait: int = 3):
     try:
         headers = {"user-agent": "Fake user-agent"}
@@ -37,22 +38,37 @@ def scrape_next_page_link(html_content):
 # Requisito 4
 def scrape_noticia(html_content):
     selector = Selector(html_content)
-    new_data = {}
-    title = selector.css(".entry-title::text").get()
-    new_data["title"] = title
+
+    title = selector.css(".entry-title::text").get().strip()
 
     timestamp = selector.css("li.meta-date::text").get()
-    new_data["timestamp"] = timestamp
 
     writer = selector.css("a.url.fn.n::text").get()
-    new_data["writer"] = writer
 
-    summary = selector.css(".entry-content p::text")
-    new_data["summary"] = summary
+    summary = selector.css(
+        "div.entry-content > p:first-of-type *::text"
+    ).getall()
+    summary = "".join(summary).strip()
 
-    category = selector.css(".label::text")
-    new_data["category"] = category
+    category = selector.css(".label::text").get()
 
+    url = selector.css("link[rel=canonical]::attr(href)").get()
+
+    tags = selector.css(".post-tags li a::text").getall()
+
+    list_comments = selector.css(".comment-list li").getall()
+    comments_count = len(list_comments)
+
+    new_data = {
+        "url": url,
+        "title": title,
+        "timestamp": timestamp,
+        "writer": writer,
+        "comments_count": comments_count,
+        "summary": summary,
+        "tags": tags,
+        "category": category,
+    }
     return new_data
 
 
